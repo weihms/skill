@@ -1,0 +1,71 @@
+{
+  "defaults": {
+    "timeout_ms": 8000,
+    "max_body_kb": 128,
+    "headers": {
+      "user-agent": "api-monitor/1.0"
+    }
+  },
+  "checks": [
+    {
+      "name": "landing page",
+      "url": "https://www.example.com/",
+      "important": true,
+      "expect": {
+        "status": 200,
+        "max_ms": 3000,
+        "content_type": "text/html",
+        "body_contains": "Example Domain",
+        "cert_days_left": 7
+      }
+    },
+    {
+      "name": "json api",
+      "url": "https://httpbin.org/json",
+      "expect": {
+        "status": "2xx",
+        "max_ms": 6000,
+        "content_type": "application/json",
+        "json": {
+          "slideshow.title": "exists",
+          "slideshow.author": "re:^Yours",
+          "slideshow.slides": "type:array",
+          "slideshow.slides[0].type": "all",
+          "slideshow.missing_key": "absent"
+        },
+        "header": {
+          "content-type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "post echo",
+      "url": "https://httpbin.org/post",
+      "method": "POST",
+      "body": { "probe": true, "source": "api-monitor" },
+      "expect": {
+        "status": [200, 201],
+        "max_ms": 6000,
+        "json": {
+          "json.probe": "type:boolean",
+          "json.source": "api-monitor"
+        }
+      }
+    },
+    {
+      "name": "xml document",
+      "url": "https://httpbin.org/xml",
+      "expect": {
+        "status": 200,
+        "content_type": "xml",
+        "xml": {
+          "slideshow.@author": "Yours Truly",
+          "slideshow.slide": "type:array",
+          "slideshow.slide[0].title": "Wake up to WonderWidgets!",
+          "slideshow.slide[1].item": "type:array",
+          "slideshow.slide[2]": "absent"
+        }
+      }
+    }
+  ]
+}
